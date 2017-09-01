@@ -1,0 +1,31 @@
+.boxcontainer, .mainbox {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly; }
+
+.mainbox {
+  width: 100%;
+  background: #ddd; }
+
+.box, .superbox, .largebox, .smallbox {
+  border: 1px solid grey;
+  padding: 5px 10px;
+  flex: 1 0 auto;
+  margin: 5px; }
+
+.superbox {
+  color: blue;
+  width: 90%;
+  order: 1; }
+
+.largebox {
+  color: blue;
+  width: 400px;
+  order: 2; }
+
+.smallbox {
+  color: green;
+  width: 200px;
+  order: 3; }
+
+/*# sourceMappingURL=layout.css.map */
