@@ -1,3 +1,13 @@
+body {
+  color: #444;
+  font-family: Verdana, Geneva, Kalimati, sans-serif;
+  font-size: 14px;
+}
+
+h1 {
+  font-size: 22px;
+}
+
 .boxcontainer {
   display: flex;
   flex-wrap: wrap;
@@ -9,6 +19,13 @@
   width: 100%;
 }
 
+.normalfont {
+  font-weight: normal;
+}
+
+td {
+  padding-bottom: 8px;
+}
 
 .box {
   border: 1px solid grey;
@@ -19,21 +36,18 @@
 
 .superbox {
   @extend .box;
-  color: blue;
   width: 90%;
   order: 1;
 }
 
 .largebox {
   @extend .box;
-  color: blue;
   width: 400px;
   order: 2;
 }
 
 .smallbox {
   @extend .box;
-  color: green;
   width: 200px;
   order: 3;
 }

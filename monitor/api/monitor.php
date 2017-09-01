@@ -12,7 +12,6 @@ $l = new Linux();
 
 $response = new stdClass();
 $response->computername = $l->getHostName();
-$response->uptime = $l->getUptime();
 
 echo json_encode($response);
 

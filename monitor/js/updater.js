@@ -1,14 +1,18 @@
 
 
 $(document).ready(function() {
-  update.server();
-  setInterval(update.server, 2500);
+  update.refresh(update.monitor, 10000)
 });
 
 var update = {
-  server: function () {
+  refresh: function(func, period) {
+    func();
+    setInterval(func, period);
+  },
+
+  monitor: function () {
     $.get({
-      url: "api/system.php",
+      url: "api/monitor.php",
       success: function(response) {
         update_ui(response);
       },

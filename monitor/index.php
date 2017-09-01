@@ -9,7 +9,7 @@ include_once "lib/common.php";
 CommonFunctions::authoriseSession();
 
 $blocks = array(
-  "summary" => array("superbox"),
+  "monitor" => array("superbox"),
   "dummy1" => array("largebox"),
   "dummy2" => array("smallbox")
 );
@@ -28,7 +28,6 @@ $blocks = array(
   <link rel="stylesheet" type="text/css" href="css/layout.css">
 </head>
 <body>
-  <h1>Test monitor</h1>
   <div class="mainbox">
       <?php
         foreach($blocks as $id => $classes) {
@@ -38,7 +37,11 @@ $blocks = array(
             echo implode(" ", $classes);
             echo "'";
           }
-          echo ">Dit is een dingetje</div>";
+          echo ">";
+          $template = "template/{$id}.php";
+          if (file_exists($template))
+            include $template;
+          echo "</div>";
         }
       ?>
   </div>

@@ -8,22 +8,27 @@
 
 class Linux
 {
-    const NA = 'N/A';
+  const NA = 'N/A';
 
-    public function getHostName() {
-        return(php_uname('n'));
+  public function getHostName()
+  {
+    return (php_uname('n'));
+  }
+
+  public function getUptime()
+  {
+    $s = shell_exec('cat /proc/uptime');
+    if (!$s) {
+      $s = @file_get_contents("/proc/uptime");
+    }
+    if ($s) {
+      $s = CommonFunctions::makereadableseconds($s);
+    } else {
+      $s = self::NA;
     }
 
-    public function getUptime() {
-        $s = shell_exec('cat /proc/uptime');
-        if ($s) {
-            $s = CommonFunctions::makereadableseconds($s);
-        } else {
-            $s = self::NA;
-        }
-
-        return($s);
-    }
+    return ($s);
+  }
 }
 
 
