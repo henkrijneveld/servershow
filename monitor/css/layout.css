@@ -17,6 +17,12 @@ h1 {
 .normalfont {
   font-weight: normal; }
 
+.updateok {
+  color: inherit; }
+
+.updatenok {
+  color: darkred; }
+
 td {
   padding-bottom: 8px; }
 
@@ -36,7 +42,12 @@ td {
 
 .smallbox {
   width: 200px;
+  max-width: 700px;
   order: 3; }
+  .smallbox table {
+    width: 97%; }
+  .smallbox td:first-child {
+    width: 40%; }
 
 div#data span {
   font-weight: bold; }

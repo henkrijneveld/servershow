@@ -23,6 +23,14 @@ h1 {
   font-weight: normal;
 }
 
+.updateok {
+  color: inherit;
+}
+
+.updatenok {
+  color: darkred;
+}
+
 td {
   padding-bottom: 8px;
 }
@@ -49,7 +57,14 @@ td {
 .smallbox {
   @extend .box;
   width: 200px;
+  max-width: 700px;
   order: 3;
+  table {
+    width: 97%;
+  }
+  td:first-child {
+    width: 40%;
+  }
 }
 
 div#data span {

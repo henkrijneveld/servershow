@@ -43,7 +43,6 @@ class CommonFunctions
 
     static function validateSession() {
         if (session_id() === "") session_start();
-        if (!isset($_SESSION['monitoraccess'])) die ("no access");
+        if (!isset($_SESSION['monitoraccess'])) die ("{}");
     }
-
 }
