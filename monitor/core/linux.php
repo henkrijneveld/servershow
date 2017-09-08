@@ -17,7 +17,7 @@ class Linux
 
   public function getUptime()
   {
-    $s = shell_exec('cat /proc/uptime');
+    $s = @shell_exec('cat /proc/uptime');
     if (!$s) {
       $s = @file_get_contents("/proc/uptime");
     }
@@ -58,45 +58,122 @@ class Linux
    */
   public function getUserGroup()
   {
-    $temp_file = tempnam(sys_get_temp_dir(), 'TMP');
-    file_put_contents($temp_file, "test");
-    $ownerid = fileowner($temp_file);
-    $groupid = filegroup($temp_file);
-    $ownerinfo = posix_getpwuid($ownerid);
-    $ownername = $ownerinfo && isset($ownerinfo["name"])?$ownerinfo["name"]:"";
-    $groupinfo = posix_getgrgid($groupid);
-    $groupname = $groupinfo && isset($groupinfo["name"])?$groupinfo["name"]:"";
-    $groupmembers = $groupinfo && isset($groupinfo["members"])?implode(" ", $groupinfo["members"]):"";
-    unlink($temp_file);
-    $ret = array();
-    $ret[] = $ownername." (".$ownerid.")";
-    $ret[] = $groupname." (".$groupid.")";
-    $ret[] = $groupmembers;
+    if (($temp_file = @tempnam(sys_get_temp_dir(), 'TMP') ) === false ||
+      (@file_put_contents($temp_file, "test") === false)) {
+      $temp_file = dirname(__FILE__)."/tmp.tmp"; // virtualbox will make the owner always vagrant in shared dirs.
+      @unlink($temp_file);
+      @file_put_contents($temp_file, "test");
+    }
+    $ret = $this->_getFileUserGroup($temp_file);
+    @unlink($temp_file);
+
+    return ($ret);
+  }
+
+  public function getUserGroupThisFile()
+  {
+    $ret = $this->_getFileUserGroup(__FILE__);
 
     return ($ret);
   }
 
   /*
+   * returns array of three:
+   *  ownername and ownerid
+   *  groupname and groupid
+   *  groupmembers
+   */
+
+  private function _getFileUserGroup($file)
+  {
+    $ret = array();
+    if (($ownerid = fileowner($file)) === false) {
+      $ret[] = "N/A";
+      $ret[] = "N/A";
+      $ret[] = "";
+      return $ret;
+    }
+    $groupid = filegroup($file);
+    $ownerinfo = posix_getpwuid($ownerid);
+    if (!$ownerinfo["name"]) $ownerinfo["name"] = "[no name]";
+    $ownername = $ownerinfo && isset($ownerinfo["name"])?$ownerinfo["name"]:"";
+    $groupinfo = posix_getgrgid($groupid);
+    if (!$groupinfo["name"]) $groupinfo["name"] = "[no name]";
+    $groupname = $groupinfo && isset($groupinfo["name"])?$groupinfo["name"]:"";
+    $groupmembers = $groupinfo && isset($groupinfo["members"])?implode(" ", $groupinfo["members"]):"";
+    $ret[] = $ownername." (id: ".$ownerid.")";
+    $ret[] = $groupname." (id: ".$groupid.")";
+    $ret[] = $groupmembers;
+    return $ret;
+  }
+
+  /*
+   * Cached number of cores in session, if it exists
+   */
+  public function getCores()
+  {
+    if (!($cores = CommonFunctions::getNameValue("cpucores"))) {
+      $s = @shell_exec('cat /proc/cpuinfo');
+      if (!$s) {
+        $s = @file_get_contents("/proc/cpuinfo");
+      }
+
+      if ($s) {
+        $processors = preg_split('/\s?\n\s?\n/', trim($s));
+        $cores = 0;
+
+        $processed = array(); // contains the physical id's from processors already used
+
+        foreach ($processors as $processor) {
+          $lines = preg_split('/\n/', $processor, -1, PREG_SPLIT_NO_EMPTY);
+          $properties = array();
+
+          foreach ($lines as $line) {
+            list($key, $value) = preg_split('/\s*:\s*/', trim($line));
+            $properties[strtolower($key)] = $value;
+          }
+
+          if ($properties['core id'] != 0) continue;
+
+          if (!isset($processed[$properties['physical id']])) {
+            $processed[$properties['physical id']] = true;
+            if (isset($properties['siblings'])) {
+              $cores += $properties['siblings'];
+            } else {
+              $cores += $properties['cpu cores'];
+            }
+          }
+        }
+      } else {
+        $cores = 1;
+      }
+      CommonFunctions::setNameValue("cpucores", $cores);
+    }
+
+    return $cores;
+  }
+
+
+  /*
    * Return array:
-   *  cpucores, cputype, cpufreq, cpucache
+   *  cputype, cpufreq, cpucache
    *  machinetype
    */
   public function getCPU()
   {
     $ret = false; // nothing found
 
-    $s = shell_exec('cat /proc/cpuinfo');
+    $s = @shell_exec('cat /proc/cpuinfo');
     if (!$s) {
       $s = @file_get_contents("/proc/cpuinfo");
     }
+
     if ($s) {
       $cores = preg_split('/\s?\n\s?\n/', trim($s));
-      $numcores = 0;
 
       $ret = array();
       foreach ($cores as $core)
       {
-        $numcores++;
         $details = preg_split('/\n/', $core, -1, PREG_SPLIT_NO_EMPTY);
 
         foreach ($details as $detail)
@@ -124,7 +201,6 @@ class Linux
           }
         }
       }
-      $ret["cpucores"] = $numcores;
 
       if (strpos($s, "hypervisor") === false) {
         $ret["machinetype"] = "bare metal or undetected";
@@ -146,6 +222,11 @@ class Linux
       if ($s) {
         $ret["machinetype"] .= " (".$s.")";
       }
+    } else {
+        $ret["cputype"] = "N/A";
+        $ret["cpufreq"] = "N/A";
+        $ret["cpucache"] = "N/A";
+        $ret["machinetype"] = "N/A";
     }
 
     return($ret);
@@ -156,10 +237,12 @@ class Linux
     $ret = false;
     $g = glob("/dev/disk/by-id/ata-*")[0];
     if ($g) {
-      $g = basename($g[0]);
-      $g = substr($g, 4);
+      $g = basename($g);
       if (strpos($g, "VBOX")) {
         $ret = "Virtualbox";
+      }
+      if (strpos($g, "QEMU")) {
+        $ret = "KVM, QEMU";
       }
     }
 
@@ -172,14 +255,14 @@ class Linux
    */
   public function getMem()
   {
-    $ret = false; // nothing found
+    $ret = array(); // nothing found
 
-    $s = shell_exec('cat /proc/meminfo');
+    $s = @shell_exec('cat /proc/meminfo');
     if (!$s) {
       $s = @file_get_contents("/proc/meminfo");
     }
+
     if ($s) {
-      $ret = array();
       $data = explode("\n", $s);
       $meminfo = array();
       foreach ($data as $line) {
@@ -193,7 +276,76 @@ class Linux
     return($ret);
   }
 
+  public function getPortOpen($port)
+  {
+    $ret = false;
 
+    if ($fp = @fsockopen("127.0.0.1", $port, $errno, $errstr, 2) ) {
+      $ret = is_resource($fp);
+      fclose($fp);
+    }
+
+    return $ret;
+  }
+
+  /*
+   * Get diskinfo for the file
+   * [0]: total space
+   * [1]: free space
+   */
+  public function getDiskInfo($file)
+  {
+    $ret = array();
+    $ret[] = disk_total_space($file);
+    $ret[] = disk_free_space($file);
+
+    return $ret;
+
+  }
+
+  /*
+   * Network. Return array
+   * One row for every interface
+   * row[0] interface name
+   * row[1] TX bytes
+   * row[2] RX bytes
+   *
+   * todo: get this from /proc/net/dev file
+   */
+
+  public function getNetwork()
+  {
+    $ret = array();
+    $interfaces = glob("/sys/class/net/*")  ;
+    foreach ($interfaces as $interface) {
+      $retinterface = array();
+      $retinterface[] = basename($interface);
+      $retinterface[] = file_get_contents($interface . "/statistics/tx_bytes");
+      $retinterface[] = file_get_contents($interface . "/statistics/rx_bytes");
+      $ret[] = $retinterface;
+    }
+
+    return $ret;
+  }
+
+  /*
+   * Load averages, percentages
+   * [0]: 1 minute
+   * [1]: 5 minutes
+   * [2]: 15 minutes
+   */
+  public function getLoad()
+  {
+    $ret = false;
+
+    $ret = @sys_getloadavg();
+    $numcores = $this->getCores();
+    foreach ($ret as &$load) {
+      $load = min(100, floor($load * 100 / $numcores));
+    }
+
+    return $ret;
+  }
 }
 
 

@@ -45,4 +45,20 @@ class CommonFunctions
         if (session_id() === "") session_start();
         if (!isset($_SESSION['monitoraccess'])) die ("{}");
     }
+
+    static function setNameValue($name, $value)
+    {
+      if (isset($_SESSION)) {
+        $_SESSION[$name] = $value;
+      }
+      return $value;
+    }
+
+    static function getNameValue($name)
+    {
+      if(isset($_SESSION) && isset($_SESSION[$name])) {
+        return $_SESSION[$name];
+      }
+      return null;
+    }
 }

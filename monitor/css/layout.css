@@ -9,7 +9,7 @@ h1 {
 .boxcontainer, .mainbox {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-evenly; }
+  justify-content: flex-start; }
 
 .mainbox {
   width: 100%; }
@@ -22,6 +22,10 @@ h1 {
 
 .updatenok {
   color: darkred; }
+
+.openport {
+  color: green;
+  font-weight: bold; }
 
 td {
   padding-bottom: 8px; }
@@ -37,11 +41,11 @@ td {
   order: 1; }
 
 .largebox {
-  width: 400px;
+  width: 500px;
   order: 2; }
 
 .smallbox {
-  width: 200px;
+  width: 350px;
   max-width: 700px;
   order: 3; }
   .smallbox table {
@@ -49,7 +53,50 @@ td {
   .smallbox td:first-child {
     width: 40%; }
 
+#services td:first-child {
+  width: 70%; }
+
+#networklist tr:first-child td {
+  font-weight: bold; }
+#networklist td {
+  width: inherit; }
+
 div#data span {
   font-weight: bold; }
+
+.outer, #diskouter, #memouter, #avg1outer, #avg5outer, #avg15outer {
+  height: 20px;
+  width: 100%;
+  background-color: lightgray; }
+
+.inner, #diskinner, #meminner, #avg1inner, #avg5inner, #avg15inner {
+  height: 20px;
+  width: 50%;
+  background-color: green;
+  margin-left: auto;
+  margin-right: 0;
+  color: white;
+  font-weight: bold;
+  text-align: right; }
+
+#avg1inner {
+  margin-left: 0;
+  margin-right: auto;
+  background-color: darkred; }
+
+#avg5inner {
+  margin-left: 0;
+  margin-right: auto;
+  background-color: darkred; }
+
+#avg15inner {
+  margin-left: 0;
+  margin-right: auto;
+  background-color: darkred; }
+
+#loadavg tr td:first-child {
+  width: 20%; }
+#loadavg tr td:nth-child(2) {
+  width: 70%; }
 
 /*# sourceMappingURL=layout.css.map */

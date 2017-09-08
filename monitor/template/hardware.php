@@ -39,10 +39,5 @@
     <td id="hwmemtotal">-</td>
   </tr>
 
-  <tr>
-    <td>Memory Free:</td>
-    <td id="hwmemfree">-</td>
-  </tr>
-
-
 </table>
+

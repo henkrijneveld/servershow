@@ -10,8 +10,11 @@ CommonFunctions::authoriseSession();
 
 $blocks = array(
   "monitor" => array("superbox"),
+  "resources" => array("largebox"),
+  "services" => array("smallbox"),
   "operatingsystem" => array("smallbox"),
-  "hardware" => array("smallbox")
+  "hardware" => array("smallbox"),
+  "network" => array("smallbox")
 );
 
 ?>

@@ -21,6 +21,12 @@ $response->osusergroup = $useinfo[0]." - ".$useinfo[1];
 if ($useinfo[2]) {
   $response->osusergroup .= "<br/>Groupmembers: ".$useinfo[2];
 }
+$useinfo = $l->getUserGroupThisFile();
+$response->osfileusergroup = $useinfo[0]." - ".$useinfo[1];
+if ($useinfo[2]) {
+  $response->osfileusergroup .= "<br/>Groupmembers: ".$useinfo[2];
+}
+
 
 echo json_encode($response);
 

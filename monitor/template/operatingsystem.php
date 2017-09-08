@@ -34,6 +34,11 @@
   </tr>
 
   <tr>
+    <td>Files user and group:</td>
+    <td id="osfileusergroup">-</td>
+  </tr>
+
+  <tr>
     <td>Uptime:</td>
     <td id="osuptime">-</td>
   </tr>

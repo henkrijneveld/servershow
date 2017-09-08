@@ -11,9 +11,10 @@ CommonFunctions::validateSession();
 $l = new Linux();
 
 $response = new stdClass();
+$response->hwcpucores = $l->getCores();
+
 $cpu = $l->getCPU();
 if ($cpu) {
-  $response->hwcpucores = isset($cpu["cpucores"])?$cpu["cpucores"]:"N/A";
   $response->hwcputype = isset($cpu["cputype"])?$cpu["cputype"]:"N/A";
   $response->hwcpufreq = isset($cpu["cpufreq"])?$cpu["cpufreq"]:"N/A";
   $response->hwcpucache = isset($cpu["cpucache"])?$cpu["cpucache"]:"N/A";
@@ -21,10 +22,7 @@ if ($cpu) {
 }
 
 $mem = $l->getMem();
-if($mem) {
-  $response->hwmemtotal = isset($mem["memtotal"])?($mem["memtotal"]/1000)." MB":"N/A";
-  $response->hwmemfree = isset($mem["memfree"])?($mem["memfree"]/1000)." MB":"N/A";
-}
+$response->hwmemtotal = isset($mem["memtotal"])?($mem["memtotal"]/1000)." MB":"N/A";
 
 echo json_encode($response);
 
