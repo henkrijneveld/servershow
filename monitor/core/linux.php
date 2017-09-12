@@ -327,7 +327,7 @@ class Linux
 
     if (count($ret) == 0) {
       $s = @file_get_contents("/proc/net/dev");
-      $s = @file_get_contents("redhatnetwork.test");
+//      $s = @file_get_contents("redhatnetwork.test");
       if ($s) {
         // redhat
         $lines = explode("\n", $s);
