@@ -51,6 +51,29 @@ var update = {
       $("#" + id + " .updateok").addClass("updatenok").removeClass("updateok");
   },
 
+  updateLoadBar: function (name, value) {
+    if (value == "N/A"){
+      $("#"+name+"inner").width("0%");
+      $("#"+name+"outer").css("backgroundColor", "#f4f4f4");
+      return;
+    }
+
+    var perc = Math.min(100, parseInt(value)/2);
+
+    if (perc <= 40) {
+      $("#"+name+"inner").css("backgroundColor", "darkgreen");
+    } else {
+      if (perc < 60) {
+        $("#" + name + "inner").css("backgroundColor", "coral");
+      } else {
+        $("#" + name + "inner").css("backgroundColor", "darkred");
+      }
+    }
+
+
+    $("#"+name+"inner").width(perc+"%");
+  },
+
  updateresources: function (response) {
     $("#diskinner").width(Math.round(parseFloat(response.rsfreedisk)/parseFloat(response.rstotaldisk) * 100) + "%");
     var memtotal = parseFloat(response.rsmemtotal);
@@ -61,9 +84,11 @@ var update = {
       $("#meminner").width("0%");
       $("#memouter").css("backgroundColor", "#f4f4f4");
     }
-    $("#avg1inner").width(response.rsload1);
-    $("#avg5inner").width(response.rsload5);
-    $("#avg15inner").width(response.rsload15);
+
+    update.updateLoadBar("avg1", response.rsload1);
+    update.updateLoadBar("avg5", response.rsload5);
+    update.updateLoadBar("avg15", response.rsload15);
+
   },
 
   monitor: function () {

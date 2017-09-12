@@ -145,7 +145,7 @@ class Linux
           }
         }
       } else {
-        $cores = 1;
+        $cores = 0;
       }
       CommonFunctions::setNameValue("cpucores", $cores);
     }
@@ -325,6 +325,26 @@ class Linux
       $ret[] = $retinterface;
     }
 
+    if (count($ret) == 0) {
+      $s = @file_get_contents("/proc/net/dev");
+      $s = @file_get_contents("redhatnetwork.test");
+      if ($s) {
+        // redhat
+        $lines = explode("\n", $s);
+        $lines = array_slice($lines, 2);
+        foreach($lines as $line) {
+          $newinterface = array();
+          $parts = preg_split('/[:\s]+/', $line);
+          if (isset($parts[1])) {
+            $newinterface[] = $parts[1];
+            if (isset($parts[10])) $newinterface[] = $parts[10];
+            if (isset($parts[2])) $newinterface[] = $parts[2];
+            $ret[] = $newinterface;
+          }
+        }
+      }
+    }
+
     return $ret;
   }
 
@@ -341,11 +361,12 @@ class Linux
     $ret = @sys_getloadavg();
     $numcores = $this->getCores();
     foreach ($ret as &$load) {
-      $load = min(100, floor($load * 100 / $numcores));
+      $load = $numcores ? min(600, floor($load * 100 / $numcores)) : false;
     }
 
     return $ret;
   }
+
 }
 
 

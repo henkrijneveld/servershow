@@ -94,9 +94,11 @@ div#data span {
   margin-right: auto;
   background-color: darkred; }
 
-#loadavg tr td:first-child {
-  width: 20%; }
-#loadavg tr td:nth-child(2) {
-  width: 70%; }
+#loadavg {
+  width: 100%; }
+  #loadavg tr td:first-child {
+    width: 20%; }
+  #loadavg tr td:nth-child(2) {
+    width: 70%; }
 
 /*# sourceMappingURL=layout.css.map */

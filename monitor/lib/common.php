@@ -15,11 +15,11 @@ class CommonFunctions
     static function makereadableseconds($s) {
         $s = (int)strtok($s, ".");
         $part_seconds = str_pad($s % 60, 2, "0", STR_PAD_LEFT);
-        $s = intdiv($s, 60);
+        $s = floor($s / 60);
         $part_minutes = str_pad($s % 60, 2, "0", STR_PAD_LEFT);
-        $s = intdiv($s, 60);
+        $s = floor ($s / 60);
         $part_hours = str_pad($s % 24, 2, "0", STR_PAD_LEFT);
-        $s = intdiv($s, 24);
+        $s = floor($s / 24);
         $part_days = $s;
         $s = "";
         if (intval($part_days)) {
@@ -56,6 +56,8 @@ class CommonFunctions
 
     static function getNameValue($name)
     {
+      return 0;
+
       if(isset($_SESSION) && isset($_SESSION[$name])) {
         return $_SESSION[$name];
       }

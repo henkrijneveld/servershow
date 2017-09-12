@@ -22,6 +22,14 @@ $ip = getenv('HTTP_CLIENT_IP')?:
 if ($ip) {
   echo "<p>Requested from client {$ip}</p>";
 }
+
+$basedir = ini_get('open_basedir');
+if ($basedir != "") {
+  echo "<div style='padding-left: 10px; border-left: red solid 5px;'><p>Some data possibly unavailable due to open_basedir restrictions<br/>";
+  echo "Current setting open_basedir = ".$basedir."</p></div>";
+}
+
+
 ?>
 
 

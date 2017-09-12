@@ -11,7 +11,14 @@ CommonFunctions::validateSession();
 $l = new Linux();
 
 $response = new stdClass();
-$response->hwcpucores = $l->getCores();
+
+$cores = $l->getCores();
+if ($cores) {
+  $response->hwcpucores = $l->getCores();
+} else {
+  $response->hwcpucores = "N/A";
+}
+
 
 $cpu = $l->getCPU();
 if ($cpu) {

@@ -25,9 +25,9 @@ if($mem) {
 
 $load = $l->getLoad();
 if ($load) {
-  $response->rsload1 = $load[0] . "%";
-  $response->rsload5 = $load[1] . "%";
-  $response->rsload15 = $load[2] . "%";
+  $response->rsload1 = $load[0] === false ? "N/A" : $load[0] . "%";
+  $response->rsload5 = $load[1] === false ? "N/A" : $load[1] . "%";
+  $response->rsload15 = $load[2] === false ? "N/A" : $load[2] . "%";
 }
 
 echo json_encode($response);
