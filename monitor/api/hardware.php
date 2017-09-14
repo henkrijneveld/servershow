@@ -12,12 +12,7 @@ $l = new Linux();
 
 $response = new stdClass();
 
-$cores = $l->getCores();
-if ($cores) {
-  $response->hwcpucores = $l->getCores();
-} else {
-  $response->hwcpucores = "N/A";
-}
+$response->hwcpucores = $l->getCores();
 
 
 $cpu = $l->getCPU();
@@ -29,7 +24,9 @@ if ($cpu) {
 }
 
 $mem = $l->getMem();
-$response->hwmemtotal = isset($mem["memtotal"])?($mem["memtotal"]/1000)." MB":"N/A";
+$response->hwmemtotal = $mem[0] != Linux::NA ? ($mem[0]/1000)." MB":$mem[0];
+$response->hwmemfree = $mem[1] != Linux::NA ? ($mem[1]/1000)." MB":$mem[1];
+$response->hwmemcached = $mem[2] != Linux::NA ? ($mem[2]/1000)." MB":$mem[2];
+$response->hwmemfreebuffers = $mem[3] != Linux::NA ? ($mem[4]/1000)." MB":$mem[3];
 
 echo json_encode($response);
-

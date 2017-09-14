@@ -1,6 +1,5 @@
 <?php
 /**
- * Created by PhpStorm.
  * User: henk
  * Date: 20-8-17
  * Time: 20:22
@@ -8,7 +7,7 @@
 
 class Linux
 {
-  const NA = 'N/A';
+  const NA = 'N/A'; // This means: result could not be determined
 
   public function getHostName()
   {
@@ -21,10 +20,10 @@ class Linux
     if (!$s) {
       $s = @file_get_contents("/proc/uptime");
     }
-    if ($s) {
-      $s = CommonFunctions::makereadableseconds($s);
-    } else {
+    if (!$s) {
       $s = self::NA;
+    } else {
+      $s = (int)strtok($s, ".");
     }
 
     return ($s);
@@ -51,7 +50,7 @@ class Linux
   }
 
   /*
-   * returns array of three:
+   * returns array of three for file created by webserver/php user:
    *  ownername and ownerid
    *  groupname and groupid
    *  groupmembers
@@ -70,6 +69,13 @@ class Linux
     return ($ret);
   }
 
+
+  /*
+   * returns array of five for this script (linux.php)
+   *  0:ownername and 1:ownerid
+   *  2:groupname and 3:groupid
+   *  4: groupmembers in array
+   */
   public function getUserGroupThisFile()
   {
     $ret = $this->_getFileUserGroup(__FILE__);
@@ -77,33 +83,30 @@ class Linux
     return ($ret);
   }
 
-  /*
-   * returns array of three:
-   *  ownername and ownerid
-   *  groupname and groupid
-   *  groupmembers
-   */
-
   private function _getFileUserGroup($file)
   {
     $ret = array();
+    $ret[] = self::NA;
+    $ret[] = self::NA;
+    $ret[] = self::NA;
+    $ret[] = self::NA;
+    $ret[] = array();
+
     if (($ownerid = fileowner($file)) === false) {
-      $ret[] = "N/A";
-      $ret[] = "N/A";
-      $ret[] = "";
       return $ret;
     }
-    $groupid = filegroup($file);
+
     $ownerinfo = posix_getpwuid($ownerid);
-    if (!$ownerinfo["name"]) $ownerinfo["name"] = "[no name]";
-    $ownername = $ownerinfo && isset($ownerinfo["name"])?$ownerinfo["name"]:"";
+    if ($ownerinfo["name"]) $ret[0] = $ownerinfo["name"];
+    $ret[1] = $ownerid;
+
+    $groupid = filegroup($file);
     $groupinfo = posix_getgrgid($groupid);
-    if (!$groupinfo["name"]) $groupinfo["name"] = "[no name]";
-    $groupname = $groupinfo && isset($groupinfo["name"])?$groupinfo["name"]:"";
-    $groupmembers = $groupinfo && isset($groupinfo["members"])?implode(" ", $groupinfo["members"]):"";
-    $ret[] = $ownername." (id: ".$ownerid.")";
-    $ret[] = $groupname." (id: ".$groupid.")";
-    $ret[] = $groupmembers;
+    if ($groupinfo["name"]) $ret[2] = $groupinfo["name"];
+    $ret[3] = $groupid;
+
+    if (isset($groupinfo["members"])) $ret[4] = $groupinfo["members"];
+
     return $ret;
   }
 
@@ -118,9 +121,9 @@ class Linux
         $s = @file_get_contents("/proc/cpuinfo");
       }
 
+      $cores = 0;
       if ($s) {
         $processors = preg_split('/\s?\n\s?\n/', trim($s));
-        $cores = 0;
 
         $processed = array(); // contains the physical id's from processors already used
 
@@ -144,13 +147,11 @@ class Linux
             }
           }
         }
-      } else {
-        $cores = 0;
       }
       CommonFunctions::setNameValue("cpucores", $cores);
     }
 
-    return $cores;
+    return $cores ? $cores : self::NA;
   }
 
 
@@ -223,10 +224,10 @@ class Linux
         $ret["machinetype"] .= " (".$s.")";
       }
     } else {
-        $ret["cputype"] = "N/A";
-        $ret["cpufreq"] = "N/A";
-        $ret["cpucache"] = "N/A";
-        $ret["machinetype"] = "N/A";
+        $ret["cputype"] = self::NA;
+        $ret["cpufreq"] = self::NA;
+        $ret["cpucache"] = self::NA;
+        $ret["machinetype"] = self::NA;
     }
 
     return($ret);
@@ -251,11 +252,13 @@ class Linux
 
   /*
    * Return array:
-   *  memtotal, memfree
+   *  0: memtotal, 1: memfreetotal, 2: memfreecached, 3: memfreebuffers
+   *
+   * memfreecached and memfreebuffers are part of memfree total
    */
   public function getMem()
   {
-    $ret = array(); // nothing found
+    $ret = array(self::NA, self::NA, self::NA, self::NA); // nothing found
 
     $s = @shell_exec('cat /proc/meminfo');
     if (!$s) {
@@ -269,8 +272,10 @@ class Linux
         list($key, $val) = explode(":", $line);
         $meminfo[$key] = (int) trim($val);
       }
-      $ret["memtotal"] = $meminfo["MemTotal"];
-      $ret["memfree"] = $meminfo["MemFree"] + $meminfo["Cached"] + $meminfo["Buffers"];
+      $ret[0] = $meminfo["MemTotal"];
+      $ret[1] = $meminfo["MemFree"] + $meminfo["Cached"] + $meminfo["Buffers"];
+      $ret[2] = $meminfo["Cached"];
+      $ret[3] = $meminfo["Buffers"];
     }
 
     return($ret);
@@ -310,7 +315,6 @@ class Linux
    * row[1] TX bytes
    * row[2] RX bytes
    *
-   * todo: get this from /proc/net/dev file
    */
 
   public function getNetwork()
@@ -349,7 +353,7 @@ class Linux
   }
 
   /*
-   * Load averages, percentages
+   * Load averages in fractions
    * [0]: 1 minute
    * [1]: 5 minutes
    * [2]: 15 minutes
@@ -361,7 +365,7 @@ class Linux
     $ret = @sys_getloadavg();
     $numcores = $this->getCores();
     foreach ($ret as &$load) {
-      $load = $numcores ? min(600, floor($load * 100 / $numcores)) : false;
+      $load = $numcores ? $load / $numcores : self::NA;
     }
 
     return $ret;

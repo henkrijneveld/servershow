@@ -39,5 +39,20 @@
     <td id="hwmemtotal">-</td>
   </tr>
 
+  <tr>
+    <td>Memory Free:</td>
+    <td id="hwmemfree">-</td>
+  </tr>
+
+  <tr>
+    <td>Used as Cache:</td>
+    <td id="hwmemcached">-</td>
+  </tr>
+
+  <tr>
+    <td>Used for Buffers:</td>
+    <td id="hwmemfreebuffers">-</td>
+  </tr>
+
 </table>
 

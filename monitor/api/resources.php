@@ -19,15 +19,15 @@ if ($disks) {
 
 $mem = $l->getMem();
 if($mem) {
-  $response->rsmemtotal = isset($mem["memtotal"])?($mem["memtotal"]/1000)." MB":"N/A";
-  $response->rsmemfree = isset($mem["memfree"])?($mem["memfree"]/1000)." MB":"N/A";
+  $response->rsmemtotal = $mem[0] != Linux::NA ?($mem[0]/1000)." MB":Linux::NA;
+  $response->rsmemfree = $mem[1] != Linux::NA ?($mem[1]/1000)." MB":Linux::NA;
 }
 
 $load = $l->getLoad();
 if ($load) {
-  $response->rsload1 = $load[0] === false ? "N/A" : $load[0] . "%";
-  $response->rsload5 = $load[1] === false ? "N/A" : $load[1] . "%";
-  $response->rsload15 = $load[2] === false ? "N/A" : $load[2] . "%";
+  $response->rsload1 = $load[0] === false ? Linux::NA : min(600, floor($load[0] * 100)) . "%";
+  $response->rsload5 = $load[1] === false ? Linux::NA : min(600, floor($load[1] * 100)) . "%";
+  $response->rsload15 = $load[2] === false ? Linux::NA : min(600, floor($load[2] * 100)) . "%";
 }
 
 echo json_encode($response);

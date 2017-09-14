@@ -25,10 +25,10 @@ $blocks = array(
   <meta charset="UTF-8">
   <title>Monitor POC</title>
 
-  <script src="js/jquery-3.2.1.js"></script>
-  <script src="js/updater.js"></script>
+  <script src="ui/js/jquery-3.2.1.js"></script>
+  <script src="ui/js/updater.js"></script>
 
-  <link rel="stylesheet" type="text/css" href="css/layout.css">
+  <link rel="stylesheet" type="text/css" href="ui/css/layout.css">
 </head>
 <body>
   <div class="mainbox">
@@ -41,7 +41,7 @@ $blocks = array(
             echo "'";
           }
           echo ">";
-          $template = "template/{$id}.php";
+          $template = "ui/template/{$id}.php";
           if (file_exists($template))
             include $template;
           echo "</div>";
