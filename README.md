@@ -21,7 +21,7 @@ PHP installed (5.3.28+).
 It relies heavily on access to the /proc directory. If that directory is not 
 accessible (mostly due to basedir limitations used by shared hosters), the information
 is very limited (I can only use what php is able to tell). 
-### Components
+## Components
 The system consists of three parts:
 * UI
 
@@ -36,7 +36,7 @@ The system consists of three parts:
         
     The System Interface is reponsible for making the state of the system available
     
-### Security
+## Security
 The api is only accessible if it is called from the same session that
 started the UI (a.k.a. the index.php). If it is not called from
 the same session, it will return a empty json message.
