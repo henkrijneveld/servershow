@@ -360,12 +360,12 @@ class Linux
    */
   public function getLoad()
   {
-    $ret = false;
-
-    $ret = @sys_getloadavg();
-    $numcores = $this->getCores();
-    foreach ($ret as &$load) {
-      $load = $numcores ? $load / $numcores : self::NA;
+    $ret = array(self::NA, self::NA, self::NA);
+    $load = @sys_getloadavg();
+    if ($numcores = intval($this->getCores())) {
+      for ($time = 0; $time < 3; $time++) {
+        $ret[$time] = $load[$time] / $numcores;
+      }
     }
 
     return $ret;

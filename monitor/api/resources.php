@@ -25,9 +25,9 @@ if($mem) {
 
 $load = $l->getLoad();
 if ($load) {
-  $response->rsload1 = $load[0] === false ? Linux::NA : min(600, floor($load[0] * 100)) . "%";
-  $response->rsload5 = $load[1] === false ? Linux::NA : min(600, floor($load[1] * 100)) . "%";
-  $response->rsload15 = $load[2] === false ? Linux::NA : min(600, floor($load[2] * 100)) . "%";
+  $response->rsload1 = $load[0] === Linux::NA ? Linux::NA : min(600, floor($load[0] * 100)) . "%";
+  $response->rsload5 = $load[1] === Linux::NA ? Linux::NA : min(600, floor($load[1] * 100)) . "%";
+  $response->rsload15 = $load[2] === Linux::NA ? Linux::NA : min(600, floor($load[2] * 100)) . "%";
 }
 
 echo json_encode($response);

@@ -16,7 +16,7 @@ var update = {
   },
 
   colorservices: function () {
-      $("#services .updateok").each(function() {
+      $("#services").find(".updateok").each(function() {
         var t = $(this).text();
         if (t === "open") {
           $(this).addClass("openport");
@@ -52,26 +52,29 @@ var update = {
   },
 
   updateLoadBar: function (name, value) {
-    if (value == "N/A"){
-      $("#"+name+"inner").width("0%");
-      $("#"+name+"outer").css("backgroundColor", "#f4f4f4");
+    var outer = $("#"+name+"outer");
+    var inner = $("#"+name+"inner");
+
+    if (value === "N/A"){
+      inner.width("0%");
+      outer.css("backgroundColor", "#f4f4f4");
       return;
     }
 
     var perc = Math.min(100, parseInt(value)/2);
 
     if (perc <= 40) {
-      $("#"+name+"inner").css("backgroundColor", "darkgreen");
+      inner.css("backgroundColor", "darkgreen");
     } else {
       if (perc < 60) {
-        $("#" + name + "inner").css("backgroundColor", "coral");
+        inner.css("backgroundColor", "coral");
       } else {
-        $("#" + name + "inner").css("backgroundColor", "darkred");
+        inner.css("backgroundColor", "darkred");
       }
     }
 
 
-    $("#"+name+"inner").width(perc+"%");
+    inner.width(perc+"%");
   },
 
  updateresources: function (response) {
@@ -95,16 +98,12 @@ var update = {
     $.get({
       url: "api/monitor.php",
       success: function(response) {
-        update_ui(response);
+        update.updateui(response);
       },
       dataType: "json"
     }).fail(function() {
-      update_ui(null);
+      update.updateui(null);
     });
-
-    function update_ui(response) {
-      $("#computername").text(response?response.computername : "N/A");
-    }
   },
 
   operatingsystem: function () {

@@ -8,6 +8,15 @@
 include_once "lib/common.php";
 CommonFunctions::authoriseSession();
 
+/*
+ * Blocks to be shown
+ *
+ * key will be the id of the enclosing div
+ * the value is an array with class names for the enclosing div
+ *
+ * the key must be the same name as the service name in the api directory
+ *
+ */
 $blocks = array(
   "monitor" => array("superbox"),
   "resources" => array("largebox"),
@@ -23,9 +32,13 @@ $blocks = array(
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Monitor POC</title>
+  <?php
+  $l = new Linux();
+  ?>
 
-  <script src="ui/js/jquery-3.2.1.js"></script>
+  <title><?php echo $l->getHostName(); ?></title>
+
+  <script src="ui/js/jquery-3.2.1.min.js"></script>
   <script src="ui/js/updater.js"></script>
 
   <link rel="stylesheet" type="text/css" href="ui/css/layout.css">

@@ -65,8 +65,6 @@ class CommonFunctions
 
   static function getNameValue($name)
   {
-    return 0;
-
     if (isset($_SESSION) && isset($_SESSION[$name])) {
       return $_SESSION[$name];
     }

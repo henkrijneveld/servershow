@@ -14,6 +14,8 @@ it is running.
 I want a simple system, easy to install, easy to tweak for
 specific purposes. No installation or browsing through all
 kinds of documentation, so I wrote it myself.
+## Installation
+Copy the monitor directory to your webserver. 
 ## Limitations
 The system is Linux only, and needs a working webserver with 
 PHP installed (5.3.28+).
