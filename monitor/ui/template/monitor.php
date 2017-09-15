@@ -29,6 +29,10 @@ if ($basedir != "") {
   echo "Current setting open_basedir = ".$basedir."</p></div>";
 }
 
+$shellexec = ini_get('disable_functions');
+if (strpos($shellexec, "shell_exec") === false) {
+  echo "<div style='padding-left: 10px; border-left: green solid 5px;'><p>shell_exec is not disabled!<br/>Detailed information can be obtained.</div>";
+}
 
 ?>
 
